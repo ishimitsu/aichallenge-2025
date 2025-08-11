@@ -104,14 +104,22 @@ private:
   {
     double quality_factor = 1.0;  // Default quality
     
-    if (latest_gnss_fix_.status.status == sensor_msgs::msg::NavSatStatus::STATUS_NO_FIX) {
-      quality_factor = 0.1;  // Very low quality
-    } else if (latest_gnss_fix_.status.status == sensor_msgs::msg::NavSatStatus::STATUS_FIX) {
-      quality_factor = 0.7;  // Medium quality
-    } else if (latest_gnss_fix_.status.status == sensor_msgs::msg::NavSatStatus::STATUS_SBAS_FIX) {
-      quality_factor = 0.9;  // High quality
-    } else if (latest_gnss_fix_.status.status == sensor_msgs::msg::NavSatStatus::STATUS_GBAS_FIX) {
-      quality_factor = 1.0;  // Excellent quality
+    switch (latest_gnss_fix_.status.status) {
+      case sensor_msgs::msg::NavSatStatus::STATUS_NO_FIX:
+        quality_factor = 0.1;  // Very low quality
+        break;
+      case sensor_msgs::msg::NavSatStatus::STATUS_FIX:
+        quality_factor = 0.7;  // Medium quality
+        break;
+      case sensor_msgs::msg::NavSatStatus::STATUS_SBAS_FIX:
+        quality_factor = 0.9;  // High quality
+        break;
+      case sensor_msgs::msg::NavSatStatus::STATUS_GBAS_FIX:
+        quality_factor = 1.0;  // Excellent quality
+        break;
+      default:
+        quality_factor = 1.0;  // Default to highest quality for unknown status
+        break;
     }
     
     // Consider position covariance if available
