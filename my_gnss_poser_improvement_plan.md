@@ -241,7 +241,45 @@ git checkout improve-my-gnss-poser
 - **launch設定**: `/home/ishimitsu/Works/AutomotiveAIChallenge/aichallenge-2025/aichallenge/workspace/src/aichallenge_submit/aichallenge_submit_launch/launch/reference.launch.xml`
 - **比較対象**: `/home/ishimitsu/Works/AutomotiveAIChallenge/aichallenge-2025/aichallenge/workspace/src/aichallenge_submit/imu_gnss_poser/`
 
+## 進捗状況
+
+### 完了項目 ✅
+- **Phase 1 基礎機能**: 完了
+  - 環境準備（依存関係追加）
+  - 基本構造リファクタリング（PoseTransformer → GnssImuPoser）
+  - GNSS品質監視機能実装
+  - 動的共分散推定機能実装
+  - 基本IMU融合機能実装
+
+- **コード品質改善**: 完了
+  - if-else連鎖をswitch文にリファクタリング
+  - 全マジックナンバーを名前付き定数に置換（23個の定数）
+  - 全定数に根拠説明コメントを追加
+  - 開発方針策定（コミット管理・定数管理）
+
+### 現在の状況
+- **ブランチ**: `improve-my-gnss-poser`
+- **最新コミット**: cb3a5ec "Add documentation for constants and establish development policies"
+- **機能レベル**: 既存`imu_gnss_poser`の基本機能を上回る状態
+
+### 次回作業予定
+- **Phase 1 残り機能**: 異常値検出とリジェクション
+  - Step 5: 異常値検出機能（統計的外れ値検出）
+  - Step 6: 位置ジャンプ検出機能
+  - Step 7: 時系列一貫性チェック機能
+  - Phase 1完了確認とテスト
+
+### 技術的な実装状況
+- **新クラス**: `GnssImuPoser`（pose_transformer.cpp）
+- **主要機能**:
+  - 動的GNSS品質評価（NavSatFixステータス基準）
+  - 品質に基づく適応的共分散調整
+  - IMU履歴管理とフィルタリング
+  - 無効姿勢データのIMU補完
+- **設定可能な定数**: 23個（全て根拠コメント付き）
+
 ---
-**作成日**: 2025-08-11
-**プロジェクト状況**: 計画策定完了、実装準備中
-**次回作業**: Phase 1実装開始
+**作成日**: 2025-08-11  
+**最終更新**: 2025-08-11  
+**プロジェクト状況**: Phase 1 基礎機能完了、異常値検出実装待ち  
+**次回作業**: Phase 1 異常値検出機能実装開始
