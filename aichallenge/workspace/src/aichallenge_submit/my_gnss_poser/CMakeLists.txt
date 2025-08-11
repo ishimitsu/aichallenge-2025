@@ -9,9 +9,20 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 add_executable(pose_transformer src/pose_transformer.cpp)
-ament_target_dependencies(pose_transformer rclcpp geometry_msgs)
+ament_target_dependencies(pose_transformer 
+  rclcpp 
+  geometry_msgs 
+  sensor_msgs 
+  tf2_geometry_msgs 
+  nav_msgs 
+  std_msgs
+)
 install(TARGETS
   pose_transformer
   DESTINATION lib/${PROJECT_NAME})
