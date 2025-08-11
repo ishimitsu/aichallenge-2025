@@ -28,25 +28,25 @@ class GnssImuPoser : public rclcpp::Node
 {
 private:
   // Configuration constants
-  static constexpr int ROS_QUEUE_SIZE = 10;
-  static constexpr double IMU_HISTORY_MAX_AGE_SEC = 2.0;
-  static constexpr double IMU_DATA_VALID_AGE_SEC = 0.1;
+  static constexpr int ROS_QUEUE_SIZE = 10;  // Standard ROS2 queue size for reliable message delivery
+  static constexpr double IMU_HISTORY_MAX_AGE_SEC = 2.0;  // Keep IMU data for sensor fusion over short term
+  static constexpr double IMU_DATA_VALID_AGE_SEC = 0.1;   // 100ms: typical IMU update rate (10Hz) tolerance
   
-  // GNSS quality factors
-  static constexpr double QUALITY_NO_FIX = 0.1;
-  static constexpr double QUALITY_BASIC_FIX = 0.7;
-  static constexpr double QUALITY_SBAS_FIX = 0.9;
-  static constexpr double QUALITY_GBAS_FIX = 1.0;
-  static constexpr double QUALITY_DEFAULT = 1.0;
-  static constexpr double QUALITY_MIN_LIMIT = 0.01;
-  static constexpr double QUALITY_MAX_LIMIT = 1.0;
+  // GNSS quality factors (based on NavSatStatus specifications)
+  static constexpr double QUALITY_NO_FIX = 0.1;      // Minimal confidence for no satellite fix
+  static constexpr double QUALITY_BASIC_FIX = 0.7;   // Standard GPS accuracy ~3-5m
+  static constexpr double QUALITY_SBAS_FIX = 0.9;    // WAAS/EGNOS enhanced accuracy ~1-2m  
+  static constexpr double QUALITY_GBAS_FIX = 1.0;    // Ground-based augmentation ~0.1-1m
+  static constexpr double QUALITY_DEFAULT = 1.0;     // Conservative default for unknown status
+  static constexpr double QUALITY_MIN_LIMIT = 0.01;  // Prevent division by zero in covariance calculation
+  static constexpr double QUALITY_MAX_LIMIT = 1.0;   // Cap maximum quality factor
   
-  // Covariance calculation constants  
-  static constexpr double BASE_POSITION_VARIANCE = 0.25;
-  static constexpr double BASE_ROTATION_VARIANCE = 0.1;
-  static constexpr double Z_AXIS_VARIANCE_MULTIPLIER = 2.0;
-  static constexpr double IMU_FUSION_UNCERTAINTY_MULTIPLIER = 2.0;
-  static constexpr double COVARIANCE_EXPONENTIAL_DECAY_FACTOR = 0.1;
+  // Covariance calculation constants (empirically tuned for automotive applications)
+  static constexpr double BASE_POSITION_VARIANCE = 0.25;  // 0.5m std dev: typical consumer GNSS accuracy
+  static constexpr double BASE_ROTATION_VARIANCE = 0.1;   // ~18° std dev: orientation uncertainty without IMU
+  static constexpr double Z_AXIS_VARIANCE_MULTIPLIER = 2.0;  // Vertical accuracy typically worse than horizontal
+  static constexpr double IMU_FUSION_UNCERTAINTY_MULTIPLIER = 2.0;  // Increase uncertainty when using IMU fallback
+  static constexpr double COVARIANCE_EXPONENTIAL_DECAY_FACTOR = 0.1;  // Exponential weighting for position standard deviation
   
   // Covariance matrix indices
   static constexpr int COV_XX = 0;   // x position variance
