@@ -1,0 +1,38 @@
+# GNSS-IMU Poser Configuration Parameters
+# These parameters can be adjusted without rebuilding the code
+
+gnss_imu_poser:
+  ros__parameters:
+    # Basic configuration
+    ros_queue_size: 10
+    imu_history_max_age_sec: 2.0
+    imu_data_valid_age_sec: 0.1
+    
+    # GNSS quality evaluation factors
+    quality_no_fix: 0.1      # Minimal confidence for no satellite fix
+    quality_basic_fix: 0.7   # Standard GPS accuracy ~3-5m  
+    quality_sbas_fix: 0.9    # WAAS/EGNOS enhanced accuracy ~1-2m
+    quality_gbas_fix: 1.0    # Ground-based augmentation ~0.1-1m
+    quality_default: 1.0     # Conservative default for unknown status
+    quality_min_limit: 0.01  # Prevent division by zero
+    quality_max_limit: 1.0   # Cap maximum quality factor
+    
+    # Covariance calculation parameters
+    base_position_variance: 0.25    # 0.5m std dev: typical consumer GNSS accuracy
+    base_rotation_variance: 0.1     # ~18° std dev: orientation uncertainty
+    z_axis_variance_multiplier: 2.0 # Vertical accuracy typically worse
+    imu_fusion_uncertainty_multiplier: 2.0  # Increase uncertainty when using IMU fallback
+    covariance_exponential_decay_factor: 0.1  # Exponential weighting for position std dev
+    
+    # Outlier detection thresholds (can be tuned for different environments)
+    gnss_history_max_size: 50
+    min_samples_for_outlier_detection: 20
+    outlier_z_score_threshold: 5.0          # 5-sigma for fewer false positives
+    max_position_jump_m: 100.0              # Maximum allowed position change per update
+    max_velocity_mps: 100.0                 # Maximum reasonable velocity (360 km/h)
+    time_consistency_threshold_sec: 5.0     # Maximum time gap between measurements
+    
+    # Debug and logging options
+    enable_outlier_logging: true            # Log outlier detection events
+    enable_quality_logging: false          # Log GNSS quality evaluation (verbose)
+    log_statistics_interval_sec: 10.0      # How often to log statistics
