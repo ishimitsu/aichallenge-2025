@@ -169,19 +169,22 @@ cleanup() {
 # Function to monitor lap completion
 monitor_single_lap() {
     echo "Starting single lap monitoring..."
-    local start_time=$(date +%s)
+    local start_time
+    start_time=$(date +%s)
     local max_lap_time=120  # Maximum expected lap time in seconds
     local check_interval=1  # Check every second
     
     while true; do
-        local current_time=$(date +%s)
+        local current_time
+        current_time=$(date +%s)
         local elapsed_time=$((current_time - start_time))
         
         # Check if result file exists (lap completed)
         if [ -f "result-details.json" ]; then
             echo "Lap result detected, checking completion..."
             # Check if lap data is available
-            local lap_count=$(jq '.laps | length' result-details.json 2>/dev/null || echo "0")
+            local lap_count
+            lap_count=$(jq '.laps | length' result-details.json 2>/dev/null || echo "0")
             if [ "$lap_count" -ge 1 ]; then
                 echo "Single lap completed! Lap count: $lap_count"
                 echo "Elapsed time: ${elapsed_time}s"
