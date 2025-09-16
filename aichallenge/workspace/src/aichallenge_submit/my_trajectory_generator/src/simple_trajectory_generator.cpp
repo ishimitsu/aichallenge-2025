@@ -59,6 +59,30 @@ public:
   }
 
 private:
+  rcl_interfaces::msg::SetParametersResult handleCsvPathChange(
+      const std::string& new_csv_path, 
+      const rcl_interfaces::msg::SetParametersResult& input_result)
+  {
+    rcl_interfaces::msg::SetParametersResult result = input_result;
+
+    if (new_csv_path != current_csv_path_) {
+      RCLCPP_INFO(get_logger(), "csv_path parameter changed from '%s' to '%s'", 
+                  current_csv_path_.c_str(), new_csv_path.c_str());
+      
+      if (loadCSVTrajectory(new_csv_path)) {
+        current_csv_path_ = new_csv_path;
+        RCLCPP_INFO(get_logger(), "Successfully loaded new trajectory from CSV: %s with %zu points", 
+                    current_csv_path_.c_str(), csv_trajectory_.points.size());
+      } else {
+        RCLCPP_ERROR(get_logger(), "Failed to load new CSV file: %s. Keeping old trajectory.", new_csv_path.c_str());
+        result.successful = false;
+        result.reason = "Failed to load new CSV file.";
+      }
+    }
+    
+    return result;
+  }
+
   TrajectoryPoint createTrajectoryPoint(const std::vector<double>& values)
   {
     TrajectoryPoint point;
@@ -138,29 +162,14 @@ private:
       if (param.get_name() == "csv_path") {
         if (param.get_type() == rclcpp::ParameterType::PARAMETER_STRING) {
           std::string new_csv_path = param.as_string();
-          // new_csv_pathがFileSystemのパスであることを確認
           if (!std::filesystem::exists(new_csv_path)) {
             RCLCPP_ERROR(get_logger(), "File does not exist: '%s'", new_csv_path.c_str());
             result.successful = false;
             result.reason = "File does not exist.";
             continue;
           }
-
-          if (new_csv_path != current_csv_path_) {
-            RCLCPP_INFO(get_logger(), "csv_path parameter changed from '%s' to '%s'", 
-                        current_csv_path_.c_str(), new_csv_path.c_str());
-            
-            // 新しいCSVファイルの読み込みを試みる
-            if (loadCSVTrajectory(new_csv_path)) {
-              current_csv_path_ = new_csv_path;
-              RCLCPP_INFO(get_logger(), "Successfully loaded new trajectory from CSV: %s with %zu points", 
-                          current_csv_path_.c_str(), csv_trajectory_.points.size());
-            } else {
-              RCLCPP_ERROR(get_logger(), "Failed to load new CSV file: %s. Keeping old trajectory.", new_csv_path.c_str());
-              result.successful = false;
-              result.reason = "Failed to load new CSV file.";
-            }
-          }
+          
+          result = handleCsvPathChange(new_csv_path, result);
         } else {
           RCLCPP_WARN(get_logger(), "Parameter 'csv_path' received with wrong type. Expected string.");
           result.successful = false;
