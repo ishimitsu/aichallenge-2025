@@ -59,6 +59,26 @@ public:
   }
 
 private:
+  TrajectoryPoint createTrajectoryPoint(const std::vector<double>& values)
+  {
+    TrajectoryPoint point;
+    point.pose.position.x = values[0];
+    point.pose.position.y = values[1];
+    point.pose.position.z = z_;
+
+    point.pose.orientation.x = values[3];
+    point.pose.orientation.y = values[4];
+    point.pose.orientation.z = values[5];
+    point.pose.orientation.w = values[6];
+    
+    point.longitudinal_velocity_mps = values[7];
+    point.lateral_velocity_mps = 0.0;
+    point.acceleration_mps2 = 0.0;
+    point.heading_rate_rps = 0.0;
+    
+    return point;
+  }
+
   bool loadCSVTrajectory(const std::string & csv_path)
   {
     std::ifstream file(csv_path);
@@ -88,22 +108,7 @@ private:
         continue;
       }
       
-      TrajectoryPoint point;
-      point.pose.position.x = values[0];
-      point.pose.position.y = values[1];
-      point.pose.position.z = z_;
-
-      point.pose.orientation.x = values[3];
-      point.pose.orientation.y = values[4];
-      point.pose.orientation.z = values[5];
-      point.pose.orientation.w = values[6];
-      
-      point.longitudinal_velocity_mps = values[7];
-      
-      point.lateral_velocity_mps = 0.0;
-      point.acceleration_mps2 = 0.0;
-      point.heading_rate_rps = 0.0;
-      
+      TrajectoryPoint point = createTrajectoryPoint(values);
       csv_trajectory_.points.push_back(point);
     }
     
