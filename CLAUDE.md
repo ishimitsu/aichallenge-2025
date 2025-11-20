@@ -72,6 +72,22 @@
 - **リポジトリ**: マルチパッケージROS2ワークスペース
 - **開発アプローチ**: 頻繁なチェックポイントでの反復的改善
 
+## モジュール改善戦略 🔧
+
+### autoware_practice_* モジュール活用方針
+- **目的**: reference.launch.xmlの標準モジュールを自前実装に置き換えて性能向上
+- **対象モジュール群**:
+  - vehicle_velocity_converter → autoware_practice_* 版に改善
+  - imu_corrector → autoware_practice_* 版に改善
+  - gyro_odometer → autoware_practice_gyro_odometer で改善
+  - simple_pure_pursuit → autoware_practice_* 版に改善
+  - simple_trajectory_generator → autoware_practice_* 版に改善
+- **改善指針**:
+  - 現行モジュール分析をベースとした機能拡張
+  - レース特化の最適化（精度・速度・安定性）
+  - 設定パラメータの柔軟性向上
+  - デバッグ・監視機能の強化
+
 ## シミュレータ実行手順 🚗
 
 ### 前提条件
@@ -102,6 +118,13 @@
 - GUI環境が必要（RViz、AWSIMの表示）
 - sudo権限使用（ネットワーク設定、システム監視用）
 - プロセス管理による優雅な終了処理実装済み
+
+## コミット前必須処理 ⚠️
+
+### Pre-commit 自動実行ルール
+- **必須**: 全てのコミット前に `pre-commit run --all-files` を実行
+- **自動修正**: 問題が検出された場合は自動修正を適用
+- **再コミット**: 自動修正が発生した場合は修正内容を再度コミット
 
 ---
 *このファイルはプロジェクトガイドラインの進化に合わせて更新する必要があります*
