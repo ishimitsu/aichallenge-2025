@@ -59,6 +59,12 @@
         <arg name="output_topic_gnss_pose_cov" value="pose_with_covariance"/>
       </include>
     </group>
+
+    <!-- LIDAR Simulator -->
+    <group>
+      <push-ros-namespace namespace="lidar"/>
+      <include file="$(find-pkg-share autoware_practice_lidar_simulator)/launch/lidar_simulator.launch.xml"/>
+    </group>
   </group>
 
     <!-- Localization -->
